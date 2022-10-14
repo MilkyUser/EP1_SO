@@ -5,11 +5,11 @@ int above(int pos) return floor((pos - 1) / 2);
 int left(int pos) return (2 * pos) + 1;
 int right(int pos) return (2 * pos) + 2;
 
-void swap(program * program_list, int program_a_index, int program_b_index)
+void swap(program * a, program * b)
 {
-    program * temp = program_list[program_a_index];
-    program_list[program_a_index] = program_list[program_b_index];
-    program_list[program_b_index] =
+    program * temp = a;
+    *a = *b;
+    *b = *temp;
 }
 
 void shift_up(program * p, program * program_list, int program_index)
