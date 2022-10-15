@@ -1,3 +1,4 @@
 ./scheduler
+scheduler
 *.o
 log*.txt

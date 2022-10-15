@@ -11,11 +11,12 @@ typedef struct program
     char ** commands;
     int command_count;
     registers reg;
-}  program;
+} program;
 
 typedef struct program_queue
 {
-    program * root;
+	program * root;
+	int size;
 } program_queue;
 
 typedef struct blocked_process
@@ -34,7 +35,6 @@ int above(int pos);
 int left(int pos);
 int right(int pos);
 void swap(program * a, program * b);
-void shift_up(program * p, program * program_list, int program_index);
-void shift_down(program * p, program * program_list, int program_index);
-void peek(program * p, program * program_list, int program_index);
-void pop(program * p, program * program_list, int program_index);
+void shift_up(program_queue * queue, int program_index);
+void shift_down(program_queue * queue, int program_index);
+program * pop(program_queue * queue);
