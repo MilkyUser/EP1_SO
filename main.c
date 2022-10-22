@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 #include "scheduler.h"
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -37,6 +38,7 @@ int get_program_files(FILE** program_file_pointers, char * path)
 }
 #else
 #include <dirent.h>
+
 #define sch_sleep uSleep
 #define tick_speed 3
 #define path_sep_ascii 47
@@ -127,15 +129,17 @@ int main(int argc, char* argv[])
             programs[current_program].commands[current_command] = command;
         }
         fclose(program_files[current_program]);
-        printf("%s, %d, %d, %s, %d\n", 
+        /*printf("%s, %d, %d, %s, %d\n", 
         	programs[current_program].name,
         	programs[current_program].priority,
         	programs[current_program].command_count,
         	programs[current_program].commands[0],
-        	quantum);
+        	quantum);*/
     }
     free(program_files);
-
+	
+	test_drive();
+	
     // TODO: TUDO KKKK
     FILE* logf;
     char* log_file_name = malloc(12 + log10(quantum));

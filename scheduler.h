@@ -38,3 +38,5 @@ void swap(program * a, program * b);
 void shift_up(program_queue * queue, int program_index);
 void shift_down(program_queue * queue, int program_index);
 program * pop(program_queue * queue);
+void insert(program_queue * queue, program * p);
+void test_drive();
