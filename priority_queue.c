@@ -8,9 +8,9 @@ int right(int pos){ return (2 * pos) + 2;}
 
 void swap(program * a, program * b)
 {
-    program * temp = a;
+    program temp = *a;
     *a = *b;
-    *b = *temp;
+    *b = temp;
 }
 
 void shift_up(program_queue * queue, int program_index)
@@ -101,5 +101,14 @@ void test_drive()
 		printf("%d ", queue->root[i].priority);
 	}
 	
-	printf("\n%d\n", prog1->priority);
+	pop(queue);
+	printf("\n");
+	
+	for (int i = 0; i<queue->size; i++)
+	{
+		printf("%d ", queue->root[i].priority);
+	}
+	
+	printf("\nsize: %d\n", queue->size);
+	
 }
