@@ -43,6 +43,31 @@ int get_program_files(FILE** program_file_pointers, char * path)
 #define tick_speed 3
 #define path_sep_ascii 47
 
+int compare_program_files_names(char * str1, char * str2)
+{	
+	printf("str1: %s | str2: %s\n", str1, str2);
+	char cstr1[256];
+	char cstr2[256];
+	
+	int i = 0;
+	while (str1[i])
+	{
+		cstr1[i] = toupper(str1[i]);
+		i++;
+	}
+	cstr1[i] = '\0';
+	
+	i = 0;
+	while (str2[i])
+	{
+		cstr2[i] = toupper(str2[i]);
+		i++;
+	}
+	cstr2[i] = '\0';
+	
+	return strcmp(cstr1, cstr2);
+}
+
 int get_program_files(FILE** program_file_pointers, char * path)
 {
 	// This snippet was extracted, and subsequently modified, from:
@@ -51,6 +76,7 @@ int get_program_files(FILE** program_file_pointers, char * path)
 	DIR *d;
 	struct dirent *dir;
  	d = opendir(path);
+ 	char ** program_names = calloc(1000, sizeof(char *));
 	if (d)
 	{
 	    while ((dir = readdir(d)) != NULL)
@@ -59,15 +85,33 @@ int get_program_files(FILE** program_file_pointers, char * path)
 	    	{
 	    		continue;
 	    	}
-	    	// TODO: save the file names in an array, sort it and then build program_file_pointers
-	    	char * program_path = calloc(256, 1);
-	    	sprintf(program_path, "%s/%s", path, dir->d_name);
-	    	program_file_pointers[program_count] = fopen(program_path, "r");
-	    	program_count++;
-	    	free(program_path);
+	    	program_names[program_count] = calloc(256, 1);
+	    	program_names[program_count] = dir->d_name; 
+			program_count++;
     	} 
     closedir(d);
   	}
+	for (int i=0; i<program_count; i++)
+  	{
+  		printf("%s\n", program_names[i]);
+  	}
+  	printf("\n");
+  	qsort(program_names, program_count, sizeof(const char*), compare_program_files_names);
+  	for (int i=0; i<program_count; i++)
+  	{
+  		printf("%s\n", program_names[i]);
+  	}
+
+  	// TODO: save the file names in an array, sort it and then build program_file_pointers
+  	for (int i=0; i<program_count; i++)
+  	{
+		char * program_path = calloc(256, 1);
+		sprintf(program_path, "%s/%s", path, program_names[i]);
+		printf("%s\n", program_path);
+	    program_file_pointers[i] = fopen(program_path, "r");
+	    free(program_path);
+  	}
+  	
   	free(dir);
   	return program_count;
 }
