@@ -19,16 +19,16 @@ typedef struct program_queue
 	int size;
 } program_queue;
 
-typedef struct blocked_process
+typedef struct blocked_program
 {
     program * process;
     char remaining_time;
     struct blocked_process * next_process;
-} blocked_process;
+} blocked_program;
 
 typedef struct blocked_queue
 {
-    blocked_process * head;
+    blocked_program * head;
 } blocked_queue;
 
 int above(int pos);
@@ -40,3 +40,4 @@ void shift_down(program_queue * queue, int program_index);
 program * pop(program_queue * queue);
 void insert(program_queue * queue, program * p);
 void test_drive();
+

@@ -38,10 +38,11 @@ int get_program_files(FILE** program_file_pointers, char * path)
 }
 #else
 #include <dirent.h>
-
+#define _DEFAULT_SOURCE
 #define sch_sleep uSleep
 #define tick_speed 3
 #define path_sep_ascii 47
+
 int get_program_files(FILE** program_file_pointers, char * path)
 {
 	// This snippet was extracted, and subsequently modified, from:
@@ -54,7 +55,11 @@ int get_program_files(FILE** program_file_pointers, char * path)
 	{
 	    while ((dir = readdir(d)) != NULL)
 	    {	
-	    	if (dir->d_name[0] == '.'){	continue; }
+	    	if (dir->d_name[0] == '.')
+	    	{
+	    		continue;
+	    	}
+	    	// TODO: save the file names in an array, sort it and then build program_file_pointers
 	    	char * program_path = calloc(256, 1);
 	    	sprintf(program_path, "%s/%s", path, dir->d_name);
 	    	program_file_pointers[program_count] = fopen(program_path, "r");
@@ -129,16 +134,12 @@ int main(int argc, char* argv[])
             programs[current_program].commands[current_command] = command;
         }
         fclose(program_files[current_program]);
-        /*printf("%s, %d, %d, %s, %d\n", 
-        	programs[current_program].name,
-        	programs[current_program].priority,
-        	programs[current_program].command_count,
-        	programs[current_program].commands[0],
-        	quantum);*/
     }
     free(program_files);
-	
-	test_drive();
+    
+    printf("%s, %d\n", programs[0].name, programs[0].priority);
+    
+    program_queue * p_queue = calloc(1, sizeof(program_queue));    
 	
     // TODO: TUDO KKKK
     FILE* logf;
