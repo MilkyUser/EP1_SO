@@ -106,7 +106,6 @@ int get_program_files(FILE** program_file_pointers, char * path)
   		printf("%s\n", program_names[i]);
   	}
 
-  	// TODO: save the file names in an array, sort it and then build program_file_pointers
   	for (int i=0; i<program_count; i++)
   	{
 		char * program_path = calloc(256, 1);
