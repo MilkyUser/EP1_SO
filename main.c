@@ -167,14 +167,24 @@ int main(int argc, char* argv[])
         fclose(program_files[current_program]);
     }
     free(program_files);
+    for (int i=0; i<program_count; i++)
+    {
+    	printf("%s - p:%d\n", programs[i].name, programs[i].priority);
+    }
     
+    printf("\n");
     program_queue * p_queue = calloc(1, sizeof(program_queue));
     p_queue->size = 0;
 	p_queue->root = calloc(1000, sizeof(program));
     for (int i=0; i<program_count; i++)
     {	
     	insert(p_queue, &programs[i]);
-    }    
+    }
+    for (int i=0; i<program_count; i++)
+    {	
+    	program * p = pop(p_queue);
+    	printf("%s - p:%d\n", p->name, p->priority);
+    }
 	
     // TODO: TUDO KKKK
     FILE* logf;
