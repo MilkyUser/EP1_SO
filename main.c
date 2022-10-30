@@ -171,7 +171,7 @@ int main(int argc, char* argv[])
     program_queue * p_queue = calloc(1, sizeof(program_queue));
     for (int i=0; i<program_count; i++)
     {
-    	
+    	insert(p_queue, programs+i);
     }    
 	
     // TODO: TUDO KKKK
