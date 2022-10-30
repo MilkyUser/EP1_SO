@@ -85,37 +85,25 @@ int get_program_files(FILE** program_file_pointers, char * path)
 	    		continue;
 	    	}
 	    	program_names[program_count] = calloc(256, 1);
-	    	printf(dir->d_name);
-	    	printf("\n");
 	    	sprintf(program_names[program_count], "%s\0", dir->d_name);
 			program_count++;
     	} 
     closedir(d);
   	}
 	
-	for (int i=0; i<program_count; i++)
-  	{
-  		//printf("%s\n", *(program_names + i));
-  	}
-  	printf("\n");
-  	
   	qsort(program_names, program_count, sizeof(const char**), compare_program_files_names);
-  	
-  	for (int i=0; i<program_count; i++)
-  	{
-  		printf("%s\n", program_names[i]);
-  	}
 
   	for (int i=0; i<program_count; i++)
   	{
 		char * program_path = calloc(256, 1);
 		sprintf(program_path, "%s%s", path, program_names[i]);
-		printf("%s\n", program_path);
 	    program_file_pointers[i] = fopen(program_path, "r");
 	    free(program_path);
+	    free(program_names[i]);
   	}
   	
   	free(dir);
+  	free(program_names);
   	return program_count;
 }
 #endif
@@ -184,7 +172,11 @@ int main(int argc, char* argv[])
     }
     free(program_files);
     
-    program_queue * p_queue = calloc(1, sizeof(program_queue)); 
+    program_queue * p_queue = calloc(1, sizeof(program_queue));
+    for (int i=0; i<program_count; i++)
+    {
+    	
+    }    
 	
     // TODO: TUDO KKKK
     FILE* logf;
