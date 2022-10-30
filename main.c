@@ -48,23 +48,19 @@ int compare_program_files_names(const char ** str1, const char ** str2)
 	char cstr1[256];
 	char cstr2[256];
 	
-	int i = 0;
-	while (*(str1 + i) != '\0')
+	for (int i=0; i<strlen(*str1); i++)
 	{	
-		cstr1[i] = toupper(*(str1 + i));
-		i++;
+		cstr1[i] = toupper((*str1)[i]);
 	}
-	cstr1[i] = '\0';
-	
-	i = 0;
-	while (*(str2 + i) != '\0')
+	cstr1[strlen(*str1)] = '\0';
+		
+	for (int i=0; i<strlen(*str2); i++)
 	{
-		cstr2[i] = toupper(*(str2 + i));
-		i++;
+		cstr2[i] = toupper((*str2)[i]);
 	}
-	cstr2[i] = '\0';
+	cstr2[strlen(*str2)] = '\0';
 	
-	return strcmp(*str1, *str2);
+	return strcmp(cstr1, cstr2);
 }
 
 int get_program_files(FILE** program_file_pointers, char * path)
@@ -92,7 +88,7 @@ int get_program_files(FILE** program_file_pointers, char * path)
   	}
 	
   	qsort(program_names, program_count, sizeof(const char**), compare_program_files_names);
-
+	
   	for (int i=0; i<program_count; i++)
   	{
 		char * program_path = calloc(256, 1);
