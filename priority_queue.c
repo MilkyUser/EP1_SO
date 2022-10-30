@@ -50,7 +50,6 @@ void insert(program_queue * queue, program * p)
 	queue->size++;
 	queue->root[queue->size-1] = *p;
 	shift_up(queue, queue->size-1);
-	printf("%d\n", p->priority);
 }
 
 program * pop(program_queue * queue)

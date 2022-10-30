@@ -169,9 +169,11 @@ int main(int argc, char* argv[])
     free(program_files);
     
     program_queue * p_queue = calloc(1, sizeof(program_queue));
+    p_queue->size = 0;
+	p_queue->root = calloc(1000, sizeof(program));
     for (int i=0; i<program_count; i++)
-    {
-    	insert(p_queue, programs+i);
+    {	
+    	insert(p_queue, &programs[i]);
     }    
 	
     // TODO: TUDO KKKK
