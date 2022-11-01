@@ -92,7 +92,7 @@ int get_program_files(FILE** program_file_pointers, char * path)
   	for (int i=0; i<program_count; i++)
   	{
 		char * program_path = calloc(256, 1);
-		sprintf(program_path, "%s%s", path, program_names[i]);
+		sprintf(program_path, "%s/%s", path, program_names[i]);
 	    program_file_pointers[i] = fopen(program_path, "r");
 	    free(program_path);
 	    free(program_names[i]);
@@ -180,6 +180,15 @@ int main(int argc, char* argv[])
     {	
     	insert(p_queue, &programs[i]);
     }
+    
+    printf("\n%d\n\n\n\n", p_queue->root[0].priority);
+    
+    for (int i=0; i<program_count; i++)
+    {	
+    	printf("i:%d, name: %s, p: %d\n", i, p_queue->root[i].name, p_queue->root[i].priority);
+    }
+    printf("\n------------\n\n");
+    
     for (int i=0; i<program_count; i++)
     {	
     	program * p = pop(p_queue);

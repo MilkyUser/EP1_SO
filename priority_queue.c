@@ -16,10 +16,13 @@ void swap(program * a, program * b)
 void shift_up(program_queue * queue, int program_index)
 {
     int program_index_above = above(program_index);
-    while(queue->root[program_index].priority > queue->root[program_index_above].priority)
-    {
+    
+    while(queue->root[program_index_above].priority < queue->root[program_index].priority)
+    {   
         swap(&queue->root[program_index], &queue->root[program_index_above]);
         program_index = program_index_above;
+        program_index_above = above(program_index);
+
     }
 }
 
@@ -31,12 +34,12 @@ void shift_down(program_queue * queue, int program_index)
 	if (left_program_index <= queue->size &&
 		queue->root[left_program_index].priority > queue->root[max_index].priority)
 	{
-		max_index = left(program_index);
+		max_index = left_program_index;
 	}
 	if (right_program_index <= queue->size &&
 		queue->root[right_program_index].priority > queue->root[max_index].priority)
 	{
-		max_index = right(program_index);
+		max_index = right_program_index;
 	}
 	if (program_index != max_index)
 	{
@@ -47,6 +50,7 @@ void shift_down(program_queue * queue, int program_index)
 
 void insert(program_queue * queue, program * p)
 {
+	printf("INSERINDO %s, p: %d\n", p->name, p->priority); 
 	queue->size++;
 	queue->root[queue->size-1] = *p;
 	shift_up(queue, queue->size-1);
@@ -54,8 +58,13 @@ void insert(program_queue * queue, program * p)
 
 program * pop(program_queue * queue)
 {
-	program * result = &queue->root[0];
-	queue->root[0] = queue->root[queue->size - 1];
+	program * result = malloc(sizeof(program));
+	result->name = queue->root[0].name;
+	result->priority = queue->root[0].priority;
+	result->commands = queue->root[0].commands;
+	result->command_count = queue->root[0].command_count;
+	result->reg = queue->root[0].reg;
+	queue->root[0] = queue->root[queue->size-1];
 	queue->size--;
 	shift_down(queue, 0);
 	return result;
