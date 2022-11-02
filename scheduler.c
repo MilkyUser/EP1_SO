@@ -147,7 +147,6 @@ int main(int argc, char* argv[])
             fscanf(priorities_file, "%d", value);
             process_table[current_program].priority = *value;
             process_table[current_program].credit = *value;
-            process_table[current_program].quantum = quantum;
         }
         else
         {

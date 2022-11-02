@@ -21,7 +21,6 @@ typedef struct PCB
     int command_count;
     char credit;
     int current_command;
-    char quantum;
     process_state current_state;
     registers reg;
 } PCB;
