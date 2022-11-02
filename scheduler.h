@@ -1,43 +1,29 @@
+typedef enum
+{
+	READY,
+	RUNNING,
+	BLOCKED,
+} process_state;
+
 typedef struct registers
 {
     int x;
     int y;
 } registers;
 
-typedef struct program
+typedef struct PCB
 {
     char * name;
     char priority;
     char ** commands;
     int command_count;
+    char credit;
+    int current_command;
+    char quantum;
+    process_state current_state;
     registers reg;
-} program;
+} PCB;
 
-typedef struct program_queue
-{
-	program * root;
-	int size;
-} program_queue;
-
-typedef struct blocked_program
-{
-    program * process;
-    char remaining_time;
-    struct blocked_process * next_process;
-} blocked_program;
-
-typedef struct blocked_queue
-{
-    blocked_program * head;
-} blocked_queue;
-
-int above(int pos);
-int left(int pos);
-int right(int pos);
-void swap(program * a, program * b);
-void shift_up(program_queue * queue, int program_index);
-void shift_down(program_queue * queue, int program_index);
-program * pop(program_queue * queue);
-void insert(program_queue * queue, program * p);
+void free_process(PCB * p);
 void test_drive();
 
