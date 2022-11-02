@@ -1,12 +1,15 @@
 all: scheduler
 
-scheduler: scheduler.o ready_queue.o blocked_queue.o
-	gcc -o scheduler scheduler.o ready_queue.o blocked_queue.o -std=c11 -lm
+scheduler: scheduler.o scheduler_util.o ready_queue.o blocked_queue.o
+	gcc -o scheduler scheduler.o scheduler_util.o ready_queue.o blocked_queue.o -std=c11 -lm
 	make clean
 
-main.o: scheduler.c scheduler.h
-	gcc -o main.o scheduler.c -c -W -Wall -ansi -pedantic -std=c11
-	
+scheduler.o: scheduler.c scheduler.h scheduler_util.h
+	gcc -o scheduler.o scheduler.c -c -W -Wall -ansi -pedantic -std=c11
+
+scheduler_util.o: scheduler_util.c scheduler_util.h 
+	gcc -o scheduler_util.o scheduler_util.c -c -W -Wall -ansi -pedantic -std=c11
+
 ready_queue.o: ready_queue.c scheduler.h ready_queue.h 
 	gcc -o ready_queue.o ready_queue.c -c -W -Wall -ansi -pedantic -std=c11
 	
