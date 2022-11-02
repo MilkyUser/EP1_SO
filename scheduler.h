@@ -1,4 +1,5 @@
 typedef struct ready_queue ready_queue;
+int global_quantum;
 
 typedef enum
 {
@@ -13,6 +14,8 @@ typedef struct registers
     int y;
 } registers;
 
+registers global_reg;
+
 typedef struct PCB
 {
     char * name;
@@ -24,7 +27,4 @@ typedef struct PCB
     process_state current_state;
     registers reg;
 } PCB;
-
-void free_process(PCB * p);
-void test_drive();
 

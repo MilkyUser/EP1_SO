@@ -14,9 +14,17 @@ typedef struct blocked_process_queue
 	int size;
 } blocked_process_queue;
 
+typedef struct ready_process_buffer
+{
+	// The PCB ** ready_process_buffer variable is an array of pointers to PCB structs
+	PCB ** ready_process_buffer;
+	int size;
+	int capacity;
+} ready_process_buffer;
+
 blocked_process_queue * initialize_blocked_process_queue();
 void block_process(blocked_process_queue * BPQ, PCB * p);
-void unblock_process(blocked_process_queue * BPQ, blocked_process * BP);
-void decrement_remaining_time(blocked_process_queue * BPQ);
+void unblock_process(ready_process_buffer * RPB, blocked_process_queue * BPQ, blocked_process * BP);
+ready_process_buffer * decrement_remaining_time(blocked_process_queue * BPQ);
 void test_drive_2();
 

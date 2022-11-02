@@ -2,3 +2,4 @@
 scheduler
 *.o
 log*.txt
+.gitignore
