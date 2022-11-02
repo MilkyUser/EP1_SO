@@ -19,7 +19,7 @@ void ready_queue_shift_up(ready_queue * queue, int PCB_index)
 {
     int PCB_index_above = ready_queue_above(PCB_index);
     
-    while(queue->queue[PCB_index_above]->priority < queue->queue[PCB_index]->priority)
+    while(queue->queue[PCB_index_above]->credit < queue->queue[PCB_index]->credit)
     {   
         ready_queue_swap(&queue->queue[PCB_index], &queue->queue[PCB_index_above]);
         PCB_index = PCB_index_above;
@@ -33,12 +33,12 @@ void ready_queue_shift_down(ready_queue * queue, int PCB_index)
 	int left_PCB_index = ready_queue_left(PCB_index);
 	int right_PCB_index = ready_queue_right(PCB_index);
 	if (left_PCB_index <= queue->size &&
-		queue->queue[left_PCB_index]->priority > queue->queue[max_index]->priority)
+		queue->queue[left_PCB_index]->credit > queue->queue[max_index]->credit)
 	{
 		max_index = left_PCB_index;
 	}
 	if (right_PCB_index <= queue->size &&
-		queue->queue[right_PCB_index]->priority > queue->queue[max_index]->priority)
+		queue->queue[right_PCB_index]->credit > queue->queue[max_index]->credit)
 	{
 		max_index = right_PCB_index;
 	}
@@ -118,7 +118,7 @@ void test_drive()
 	
 	for (int i=0; i<queue->size; i++)
 	{
-		printf("%s | PRIORIDADE %d\n", queue->queue[i]->name, queue->queue[i]->priority);
+		printf("%s | PRIORIDADE %d\n", queue->queue[i]->name, queue->queue[i]->credit);
 	}
 	
 	printf("\n\n");
@@ -126,7 +126,7 @@ void test_drive()
 	for (int i=0; i<10; i++)
 	{
 		PCB p = *ready_queue_pop(queue);
-		printf("%s | PRIORIDADE %d\n", p.name, p.priority);
+		printf("%s | PRIORIDADE %d\n", p.name, p.credit);
 	}
 
 }

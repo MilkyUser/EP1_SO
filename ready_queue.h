@@ -2,7 +2,7 @@ typedef struct PCB PCB;
 
 typedef struct ready_queue
 {
-	// The process ** queue variable is an array of pointers to process structs
+	// The PCB ** queue variable is an array of pointers to PCB structs
 	PCB ** queue;
 	int size;
 } ready_queue;
