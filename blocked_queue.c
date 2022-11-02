@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "scheduler.h"
 #include "blocked_queue.h"
+#include "ready_queue.h"
 
 blocked_process_queue * initialize_blocked_process_queue()
 {
@@ -14,6 +15,11 @@ void block_process(blocked_process_queue * BPQ, PCB * p)
 {
 	p->current_state = BLOCKED;
 	blocked_process * b = malloc(sizeof(blocked_process));
+	if (BPQ->HEAD != NULL)
+	{
+		BPQ->HEAD->previous = b;
+	}
+	b->previous = NULL;
 	b->next = BPQ->HEAD;
 	b->remaining_time = 2;
 	b->blocked_process = p;
@@ -21,9 +27,27 @@ void block_process(blocked_process_queue * BPQ, PCB * p)
 	BPQ->size++;
 }
 
-void unblock_process(blocked_process * BP)
+void unblock_process(blocked_process_queue * BPQ, blocked_process * BP)
 {
-	// TODO
+	if (BP->previous == NULL)
+	{
+		BPQ->HEAD = BP->next;
+		if (BP->next != NULL)
+		{
+			BP->next->previous = NULL;
+		}
+	}
+	else
+	{
+		BP->previous->next = BP->next;
+		if (BP->next != NULL)
+		{
+			BP->next->previous = BP->previous;
+		}
+	}
+	BP->blocked_process->current_state = READY;
+	ready_queue_insert(r_queue, BP->blocked_process);
+	free(BP);
 }
 
 void decrement_remaining_time(blocked_process_queue * BPQ)
@@ -32,8 +56,7 @@ void decrement_remaining_time(blocked_process_queue * BPQ)
 	{
 		if (BP->remaining_time<=0)
 		{
-			// TODO: implement node deleting
-			unblock_process(BP);
+			unblock_process(BPQ, BP);
 			continue;
 		}
 		BP->remaining_time--;
@@ -51,6 +74,12 @@ void test_drive_2()
 	block_process(BPQ, &p1);
 	decrement_remaining_time(BPQ);
 	block_process(BPQ, &p2);
+	for (blocked_process * BP = BPQ->HEAD; BP != NULL; BP = BP->next)
+	{
+		printf("%s | %d\n", BP->blocked_process->name, BP->remaining_time);
+	}
+	printf("\n\n");
+	unblock_process(BPQ, BPQ->HEAD->next->next);
 	for (blocked_process * BP = BPQ->HEAD; BP != NULL; BP = BP->next)
 	{
 		printf("%s | %d\n", BP->blocked_process->name, BP->remaining_time);

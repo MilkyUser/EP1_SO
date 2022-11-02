@@ -1,3 +1,5 @@
+typedef struct ready_queue ready_queue;
+
 typedef enum
 {
 	READY,
