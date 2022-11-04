@@ -4,6 +4,9 @@
 #include "ready_queue.h"
 #include "scheduler.h"
 
+// The implementation of this priority queue was adapted from:
+// https://www.geeksforgeeks.org/priority-queue-using-binary-heap/
+
 int ready_queue_above(int pos){ return floor((pos - 1) / 2);}
 int ready_queue_left(int pos){ return (2 * pos) + 1;}
 int ready_queue_right(int pos){ return (2 * pos) + 2;}

@@ -1,3 +1,10 @@
+/*****************************
+ ANA POMARICO - 11208141
+ BRUNO LEITE DE ANDRADE - 11369642
+ DAYANE CARVALHO - 11319002
+ VINICIUS MORAES - 
+ *****************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -12,22 +19,27 @@ void consume_ready_queue(ready_queue * r_queue, blocked_process_queue * BPQ)
 {
 	while (r_queue->size > 0)
 	{
+		quantum_iter_count++;
 		ready_process_buffer * newly_ready = decrement_remaining_time(BPQ);
+		
 		for (int i=0; i<newly_ready->size; i++)
 		{
 			ready_queue_insert(r_queue, newly_ready->ready_process_buffer[i]);
-			printf("\tINSERT %s\n", newly_ready->ready_process_buffer[i]->name); 
 		}
+		
 		free(newly_ready->ready_process_buffer);
 		free(newly_ready);
+		
 		PCB * running = ready_queue_pop(r_queue);
+		global_reg->x = running->reg->x;
+		global_reg->y = running->reg->y; 
 		running->current_state = RUNNING;
 		printf("Executando %s\n", running->name);
 
 		int c;
 		for (
 			c = running->current_command;
-			running->current_command < global_quantum + c && running->current_command < running->command_count;
+			running->current_command <  c + global_quantum && running->current_command < running->command_count;
 			running->current_command++
 			)
 		{	
@@ -41,54 +53,64 @@ void consume_ready_queue(ready_queue * r_queue, blocked_process_queue * BPQ)
 			{
 				running->current_command++;
 				printf("E/S iniciada em %s\n", running->name);
-				block_process(BPQ, running, 2);
+				block_process(BPQ, running, 3);
 				break;
 			}
+			// Updates registers
 			if (running->commands[running->current_command][0] == 'X')
 			{
-				global_reg.x = strtol(&running->commands[running->current_command][2], NULL, 10);
+				global_reg->x = strtol(&running->commands[running->current_command][2], NULL, 10);
 			}
 			else if (running->commands[running->current_command][0] == 'Y')
 			{
-				global_reg.y = strtol(&running->commands[running->current_command][2], NULL, 10);
+				global_reg->y = strtol(&running->commands[running->current_command][2], NULL, 10);
 			}
+			
 			else if (strcmp(running->commands[running->current_command], "SAIDA")==0)
 			{
-				// TODO
+				// The PCB's are never actually freed, instead they are marked as "FINISHED" which indicates
+				// their slot in the process table is free to be assigned to a new incoming process.
+				// This process is not implemented since this would be out of the scope of this assignment.
+				running->current_state = FINISHED;
+				printf("%s terminado. X=%d. Y=%d\n", running->name, global_reg->x, global_reg->y);
 			}
 			
 		}
 		
-		if (running->current_state != BLOCKED && running->credit > 0)
+		if (running->current_state != FINISHED)
 		{
-			ready_queue_insert(r_queue, running);
+			running->current_command - c == 1 ? 
+			printf("Interrompendo %s apos 1 instrucao\n", running->name) :
+			printf("Interrompendo %s apos %d instrucoes\n", running->name, running->current_command-c);
+			if (running->current_state == RUNNING)
+			{
+				block_process(BPQ, running, 0);
+			}
 		}
-		running->current_command-c == 1 ? 
-		printf("Interrompendo %s após 1 instrução\n", running->name) :
-		printf("Interrompendo %s após %d instruções\n", running->name, running->current_command-c);
-		
-		printf("\n\n----------\n\n");
-    
-		for (blocked_process * BP = BPQ->HEAD; BP != NULL; BP = BP->next)
-		{
-			printf("PROGRAM: %s, STATE: %d, CURRENT_COM: %d, COM_COUNT: %d, CREDIT %d\n", BP->blocked_process->name, BP->blocked_process->current_state, BP->blocked_process->current_command, BP->blocked_process->command_count, BP->blocked_process->credit);
-		}
-    	printf("\n\n----------\n\n");
-
 	}
 }
 
 int main(int argc, char * argv[])
 {
+
 	// Open config files
 	FILE * quantum_file = fopen("quantum.txt", "r");
     FILE * priorities_file = fopen("prioridades.txt", "r");
     
     // Set global variables
-    global_reg = (registers) {NULL, NULL};
+    total_interruptions = 0;
+    global_reg = calloc(1, sizeof(registers));
     fscanf(quantum_file, "%d", &global_quantum);
     fclose(quantum_file);
     
+	// Opening Log file
+	char* log_file_name = malloc(12 + log10(global_quantum));
+    log10(global_quantum) < 1 ?
+    sprintf(log_file_name, "log0%d.txt", global_quantum) :
+    sprintf(log_file_name, "log%d.txt", global_quantum);
+    // Redirects stdout to "log_file" 
+    FILE * log_file = freopen(log_file_name, "a", stdout);
+
     if (global_quantum > 999)
     {
     	// Let's not take any chances...
@@ -97,8 +119,8 @@ int main(int argc, char * argv[])
     }
     
     FILE ** program_files = calloc(1000, sizeof(FILE*));
-    int program_count = get_program_files(program_files, argv[1]);
-    PCB * process_table = malloc(sizeof(PCB)*program_count);
+    program_count = get_program_files(program_files, argv[1]);
+    process_table = malloc(sizeof(PCB)*program_count);
 
 	// Loop through all "program_file_pointers" and initialize the programs in the Process Table
 	for (int current_program = 0; current_program < program_count; current_program++)
@@ -106,7 +128,7 @@ int main(int argc, char * argv[])
         process_table[current_program].name = malloc(64);
         fgets(process_table[current_program].name, 64, program_files[current_program]);
         process_table[current_program].name[strcspn(process_table[current_program].name, "\r\n")] = '\0';
-
+		printf("Carregando %s\n", process_table[current_program].name);
         if (!feof(priorities_file))
         {
         	// Max priority accepted: 255
@@ -139,6 +161,7 @@ int main(int argc, char * argv[])
             exit(1);
         }
 		
+		total_command_count += command_count;
         process_table[current_program].command_count = command_count;
         process_table[current_program].current_command = 0;
         
@@ -154,7 +177,7 @@ int main(int argc, char * argv[])
         fclose(program_files[current_program]);
         
         process_table[current_program].current_state = READY;
-        process_table[current_program].reg = (registers) {NULL, NULL};
+        process_table[current_program].reg = calloc(1, sizeof(registers));
         
     } 
     // Finishes initialization of Process Table
@@ -167,43 +190,41 @@ int main(int argc, char * argv[])
     {	
     	ready_queue_insert(r_queue, &process_table[i]);
     }
-   	
-    // TODO: main loop	
-    
-    //test_drive_2();
-    //return 0;
-    blocked_process_queue * BPQ = initialize_blocked_process_queue();
-    consume_ready_queue(r_queue, BPQ);
-    
-    printf("\n\n----------\n\n");
-    
-    for (int i=0; i<r_queue->size; i++)
-    {
-    	printf("PROGRAM: %s, STATE: %d, CURRENT_COM: %d, COM_COUNT: %d, CREDIT %d\n", r_queue->queue[i]->name, r_queue->queue[i]->current_state, r_queue->queue[i]->current_command, r_queue->queue[i]->command_count, r_queue->queue[i]->credit);
-    }
-    
-    printf("\n\n----------\n\n");
-    
-    for (blocked_process * BP = BPQ->HEAD; BP != NULL; BP = BP->next)
-    {
-    	printf("PROGRAM: %s, STATE: %d, CURRENT_COM: %d, COM_COUNT: %d, CREDIT %d\n", BP->blocked_process->name, BP->blocked_process->current_state, BP->blocked_process->current_command, BP->blocked_process->command_count, BP->blocked_process->credit);
-    }
-    
-    printf("\n\n----------\n\n");
-    
-    for (int i=0; i<program_count; i++)
-    {
-    	printf("PROGRAM: %s, STATE: %d, CURRENT_COM: %d, COM_COUNT: %d, CREDIT %d\n", process_table[i].name, process_table[i].current_state, process_table[i].current_command, process_table[i].command_count, process_table[i].credit);
-    }
 
-	FILE* logf;
-    char* log_file_name = malloc(12 + log10(global_quantum));
-    log10(global_quantum) < 1 ?
-    sprintf(log_file_name, "log0%d.txt", global_quantum) :
-    sprintf(log_file_name, "log%d.txt", global_quantum);
-    logf = fopen(log_file_name, "a");
-    fprintf(logf, "QUANTUM: %d\n", global_quantum);
-    fclose(logf);
+   	// Initializes a blocked process queue to be later filled
+    blocked_process_queue * BPQ = initialize_blocked_process_queue();
+    
+    // Main Loop
+    do
+    {
+  		// This loop consumes all ready processes and then re-insert them in the ready queue if possible
+    	consume_ready_queue(r_queue, BPQ);
+    	ready_process_buffer * newly_ready = malloc(sizeof(ready_process_buffer));
+		newly_ready->ready_process_buffer = calloc(BPQ->size, sizeof(PCB*));
+		newly_ready->size = 0;
+		newly_ready->capacity = BPQ->size;
+    	
+    	for (blocked_process * BP = BPQ->HEAD; BP != NULL; BP = BP->next)
+    	{
+    		BP->blocked_process->current_state = READY;
+    		BP->blocked_process->credit = BP->blocked_process->priority; 
+			unblock_process(newly_ready, BPQ, BP);
+    	}
+
+    	for (int i=0; i<newly_ready->size; i++)
+		{
+			ready_queue_insert(r_queue, newly_ready->ready_process_buffer[i]);
+		}
+		
+		free(newly_ready->ready_process_buffer);
+    	free(newly_ready);
+    } while (r_queue->size > 0);
+    
+    // Print statistics
+    printf("MEDIA DE TROCAS: %.2f\n", (float) total_interruptions/program_count);
+    printf("MEDIA DE INSTRUCOES: %.2f\n", (float) total_command_count/quantum_iter_count);
+    printf("QUANTUM: %d\n", global_quantum);
+    fclose(log_file);
     
     return 0;
 }

@@ -1,7 +1,4 @@
-typedef struct registers registers;
-
 typedef struct PCB PCB;
-registers global_reg;
 
 typedef struct ready_queue
 {
