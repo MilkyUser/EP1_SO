@@ -30,20 +30,21 @@ void consume_ready_queue(ready_queue * r_queue, blocked_process_queue * BPQ)
 			running->current_command < global_quantum + c && running->current_command < running->command_count;
 			running->current_command++
 			)
-		{
+		{	
 			if (running->credit <= 0)
 			{
-				block_process(BPQ, running);
+				block_process(BPQ, running, 0);
+				break;
 			}
 			running->credit--;
 			if (strcmp(running->commands[running->current_command], "E/S")==0)
 			{
 				running->current_command++;
 				printf("E/S iniciada em %s\n", running->name);
-				block_process(BPQ, running);
+				block_process(BPQ, running, 2);
 				break;
 			}
-			else if (running->commands[running->current_command][0] == 'X')
+			if (running->commands[running->current_command][0] == 'X')
 			{
 				global_reg.x = strtol(&running->commands[running->current_command][2], NULL, 10);
 			}
@@ -53,8 +54,9 @@ void consume_ready_queue(ready_queue * r_queue, blocked_process_queue * BPQ)
 			}
 			else if (strcmp(running->commands[running->current_command], "SAIDA")==0)
 			{
-				// TODO running
+				// TODO
 			}
+			
 		}
 		
 		if (running->current_state != BLOCKED && running->credit > 0)
@@ -166,8 +168,10 @@ int main(int argc, char * argv[])
     	ready_queue_insert(r_queue, &process_table[i]);
     }
    	
-   	// TODO: main loop	
-   	
+    // TODO: main loop	
+    
+    //test_drive_2();
+    //return 0;
     blocked_process_queue * BPQ = initialize_blocked_process_queue();
     consume_ready_queue(r_queue, BPQ);
     
