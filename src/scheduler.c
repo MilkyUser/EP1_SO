@@ -226,7 +226,7 @@ int main(int argc, char * argv[])
     printf("MEDIA DE TROCAS: %.2f\n", (float) total_interruptions/program_count);
     printf("MEDIA DE INSTRUCOES: %.2f\n", (float) total_command_count/quantum_iter_count);
     printf("QUANTUM: %d\n", global_quantum);
+    printf("\n");
     fclose(log_file);
-    
     return 0;
 }
