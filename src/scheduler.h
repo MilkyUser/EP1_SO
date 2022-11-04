@@ -1,3 +1,12 @@
+/************************************
+ EACH - USP | SISTEMAS DE INFORMAÇÃO
+ EP1 - SO
+ ANA POMARICO - 11208141
+ BRUNO LEITE DE ANDRADE - 11369642
+ DAYANE CARVALHO - 11319002
+ VINÍCIUS M O DE MORAES - 11207748
+ ************************************/
+
 typedef struct ready_queue ready_queue;
 int global_quantum;
 int total_interruptions;

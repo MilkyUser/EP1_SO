@@ -1,9 +1,11 @@
-/*****************************
+/************************************
+ EACH - USP | SISTEMAS DE INFORMAÇÃO
+ EP1 - SO
  ANA POMARICO - 11208141
  BRUNO LEITE DE ANDRADE - 11369642
  DAYANE CARVALHO - 11319002
- VINICIUS MORAES - 
- *****************************/
+ VINÍCIUS M O DE MORAES - 11207748
+ ************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
